@@ -31,6 +31,6 @@ export interface MessageAddressTableLookup {
 export interface FormattedTransactionData {
   signature: string;
   slot: string;
-  instructionType: "create" | "buy" | "sell";
+  instructionType: "create" | "buy" | "sell" | "collect_creator_fee";
   [key: string]: any;
 }

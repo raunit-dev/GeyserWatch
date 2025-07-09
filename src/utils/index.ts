@@ -1,4 +1,3 @@
-
 import { PublicKey } from "@solana/web3.js";
 import bs58 from "bs58";
 import axios from "axios";
@@ -11,6 +10,7 @@ import {
   PUMP_FUN_BUY_IX_DISCRIMINATOR,
   PUMP_FUN_CREATE_IX_DISCRIMINATOR,
   PUMP_FUN_SELL_IX_DISCRIMINATOR,
+  PUMP_FUN_COLLECT_CREATOR_FEE_IX_DISCRIMINATOR,
 } from "../config";
 
 export async function decodeInstructionArgs(
@@ -23,6 +23,8 @@ export async function decodeInstructionArgs(
     return decodeBuyInstructionArgs(instructionData);
   } else if (discriminator.equals(PUMP_FUN_SELL_IX_DISCRIMINATOR)) {
     return decodeSellInstructionArgs(instructionData);
+  } else if (discriminator.equals(PUMP_FUN_COLLECT_CREATOR_FEE_IX_DISCRIMINATOR)) {
+    return {};
   }
   return {};
 }
@@ -155,13 +157,15 @@ export async function formatData(
   const discriminator = Buffer.from(matchingInstruction.data.slice(0, 8));
   const discriminatorHex = discriminator.toString("hex");
 
-  let instructionType: "create" | "buy" | "sell";
+  let instructionType: "create" | "buy" | "sell" | "collect_creator_fee";
   if (discriminator.equals(PUMP_FUN_CREATE_IX_DISCRIMINATOR)) {
     instructionType = "create";
   } else if (discriminator.equals(PUMP_FUN_BUY_IX_DISCRIMINATOR)) {
     instructionType = "buy";
-  } else {
+  } else if (discriminator.equals(PUMP_FUN_SELL_IX_DISCRIMINATOR)) {
     instructionType = "sell";
+  } else {
+    instructionType = "collect_creator_fee";
   }
 
   const accountKeys = message.accountKeys;
@@ -172,19 +176,24 @@ if (!accountList) {
 }
 
 const includeAccounts = accountList.reduce<Record<string, string>>((acc, { name, index }) => {
-    const accountIndex = matchingInstruction.accounts[index];
-    const publicKey = accountKeys[accountIndex];
-    if (!publicKey) {
-  console.warn(`Missing public key for account index ${index} (name: ${name}) in discriminator ${discriminatorHex}`);
-  return undefined; // Or skip/continue depending on your need
-}
-    try {
+  const accountIndex = matchingInstruction.accounts?.[index];
+  const publicKey = accountKeys?.[accountIndex];
+
+  if (!publicKey) {
+    console.warn(
+      `Missing public key for account index ${index} (name: ${name}) in discriminator ${discriminatorHex}`
+    );
+    return acc; // skip this entry, keep going
+  }
+
+  try {
     acc[name] = new PublicKey(publicKey).toBase58();
   } catch (e) {
     console.warn(`Failed to parse public key at index ${index}:`, publicKey);
   }
-    return acc;
-  }, {});
+
+  return acc;
+}, {});
 
   const instructionArgs = await decodeInstructionArgs(matchingInstruction.data);
 

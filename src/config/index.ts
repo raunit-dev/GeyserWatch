@@ -11,6 +11,13 @@ export const PUMP_FUN_BUY_IX_DISCRIMINATOR = Buffer.from([
 export const PUMP_FUN_SELL_IX_DISCRIMINATOR = Buffer.from([
   51, 230, 133, 164, 1, 127, 131, 173,
 ]);
+export const PUMP_FUN_COLLECT_CREATOR_FEE_IX_DISCRIMINATOR = Buffer.from([
+  20, 22, 86, 123, 198, 28, 219, 132,
+]);
+
+export const PUMP_FUN_COLLECT_CREATOR_FEE = Buffer.from([
+  20, 22, 86, 123, 198, 28, 219, 132
+]);
 
 export const COMMITMENT = CommitmentLevel.FINALIZED;
 
@@ -20,6 +27,7 @@ export const FILTER_CONFIG = {
     PUMP_FUN_CREATE_IX_DISCRIMINATOR,
     PUMP_FUN_BUY_IX_DISCRIMINATOR,
     PUMP_FUN_SELL_IX_DISCRIMINATOR,
+    PUMP_FUN_COLLECT_CREATOR_FEE_IX_DISCRIMINATOR,
   ],
 };
 
@@ -29,6 +37,7 @@ export const ACCOUNTS_TO_INCLUDE: Record<
 > = {
   [PUMP_FUN_CREATE_IX_DISCRIMINATOR.toString("hex")]: [
     { name: "mint", index: 0 },
+    { name: "mint_authority", index: 1 },
     { name: "bonding_curve", index: 2 },
     { name: "associated_bonding_curve", index: 3 },
     { name: "user", index: 7 },
@@ -46,6 +55,13 @@ export const ACCOUNTS_TO_INCLUDE: Record<
     { name: "mint", index: 2 },
     { name: "bonding_curve", index: 3 },
     { name: "associated_bonding_curve", index: 4 },
+  ],
+  [PUMP_FUN_COLLECT_CREATOR_FEE_IX_DISCRIMINATOR.toString("hex")]: [
+    { name: "creator", index: 0 },
+    { name: "creator_vault", index: 1 },
+    { name: "system_program", index: 2 },
+    { name: "event_authority", index: 3 },
+    { name: "program", index: 4 },
   ],
 };
 
@@ -65,6 +81,7 @@ export const INSTRUCTION_ARGS: Record<string, { name: string; type: string }[]> 
       { name: "amount", type: "u64" },
       { name: "min_sol_output", type: "u64" },
     ],
+    [PUMP_FUN_COLLECT_CREATOR_FEE_IX_DISCRIMINATOR.toString("hex")]: [],
   };
 
 export const GATEWAYS = [
