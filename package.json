@@ -1,0 +1,32 @@
+{
+  "name": "pump-fun-monitor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "npx ts-node index.ts",
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "clean": "rm -rf dist",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@solana/web3.js": "^1.98.2",
+    "@triton-one/yellowstone-grpc": "^4.0.2",
+    "@types/node": "^24.0.10",
+    "axios": "^1.10.0",
+    "bs58": "^6.0.0",
+    "dotenv": "^17.0.1",
+    "fs": "^0.0.1-security"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^6.1.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.0"
+  }
+}
