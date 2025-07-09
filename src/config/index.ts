@@ -29,7 +29,6 @@ export const ACCOUNTS_TO_INCLUDE: Record<
 > = {
   [PUMP_FUN_CREATE_IX_DISCRIMINATOR.toString("hex")]: [
     { name: "mint", index: 0 },
-    { name: "mint_authority", index: 1 },
     { name: "bonding_curve", index: 2 },
     { name: "associated_bonding_curve", index: 3 },
     { name: "user", index: 7 },

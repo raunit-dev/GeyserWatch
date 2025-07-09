@@ -165,12 +165,24 @@ export async function formatData(
   }
 
   const accountKeys = message.accountKeys;
-  const includeAccounts = ACCOUNTS_TO_INCLUDE[discriminatorHex].reduce<
-    Record<string, string>
-  >((acc, { name, index }) => {
+const accountList = ACCOUNTS_TO_INCLUDE[discriminatorHex];
+if (!accountList) {
+  console.warn(`No account mapping found for discriminator ${discriminatorHex}`);
+  return undefined;
+}
+
+const includeAccounts = accountList.reduce<Record<string, string>>((acc, { name, index }) => {
     const accountIndex = matchingInstruction.accounts[index];
     const publicKey = accountKeys[accountIndex];
+    if (!publicKey) {
+  console.warn(`Missing public key for account index ${index} (name: ${name}) in discriminator ${discriminatorHex}`);
+  return undefined; // Or skip/continue depending on your need
+}
+    try {
     acc[name] = new PublicKey(publicKey).toBase58();
+  } catch (e) {
+    console.warn(`Failed to parse public key at index ${index}:`, publicKey);
+  }
     return acc;
   }, {});
 
