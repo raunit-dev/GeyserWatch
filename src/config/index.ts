@@ -55,18 +55,18 @@ export const ACCOUNTS_TO_INCLUDE: Record<
   //   { name: "user", index: 7 },
   // ],
   [PUMP_FUN_BUY_IX_DISCRIMINATOR.toString("hex")]: [
-    { name: "global", index: 0 },
-    { name: "fee_recipient", index: 1 },
+    // { name: "global", index: 0 },
+    // { name: "fee_recipient", index: 1 },
     { name: "mint", index: 2 },
-    { name: "bonding_curve", index: 3 },
-    { name: "associated_bonding_curve", index: 4 },
+    // { name: "bonding_curve", index: 3 },
+    // { name: "associated_bonding_curve", index: 4 },
   ],
   [PUMP_FUN_SELL_IX_DISCRIMINATOR.toString("hex")]: [
-    { name: "global", index: 0 },
-    { name: "fee_recipient", index: 1 },
+    // { name: "global", index: 0 },
+    // { name: "fee_recipient", index: 1 },
     { name: "mint", index: 2 },
-    { name: "bonding_curve", index: 3 },
-    { name: "associated_bonding_curve", index: 4 },
+    // { name: "bonding_curve", index: 3 },
+    // { name: "associated_bonding_curve", index: 4 },
   ],
 };
 
