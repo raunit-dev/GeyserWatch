@@ -1,152 +1,90 @@
-# YelloStone gRPC 
+# Pump.fun Real-Time Transaction Monitor
 
-A real-time, high-performance Solana blockchain monitor that captures and parses all Pump.fun activity—including **token creation**, **buy**, **sell**, and **creator fee collection** instructions—using Yellowstone gRPC for efficient, low-latency streaming and advanced instruction decoding.
+This project provides a real-time monitoring solution for transactions on the Pump.fun platform, leveraging the power of Triton One's Yellowstone Geyser plugin for Solana. It allows users to subscribe to and decode buy and sell transactions for any token listed on Pump.fun, providing a live feed of token activity.
 
----
+## Features
 
-## 🚀 Overview
+- **Real-Time Monitoring:** Utilizes gRPC streams to receive live transaction data from a Solana Geyser plugin.
+- **Targeted Filtering:** Filters transactions to specifically capture buy and sell events related to pre-configured mint authorities on the Pump.fun platform.
+- **Data Decoding:** Decodes raw transaction data to extract meaningful information, including instruction types, token amounts, and associated accounts.
+- **Structured Output:** Presents the decoded transaction data in a clean, readable format.
+- **Scalable Architecture:** The codebase is structured into modular components for clarity and maintainability, separating concerns for client interaction, stream management, data handling, and configuration.
 
-This application streams the Solana blockchain via Yellowstone gRPC, targeting the Pump.fun program to extract and format all create, buy, sell, and creator fee collection instructions. It decodes and outputs full transaction metadata, accounts, and arguments in structured JSON—ideal for analytics, dashboards, or compliance monitoring.
+## Tech Stack
 
----
+- **Node.js & TypeScript:** The core application is built on the Node.js runtime with TypeScript for type safety and improved developer experience.
+- **gRPC:** Communication with the Yellowstone Geyser plugin is handled through gRPC, enabling efficient, high-performance data streaming.
+- **@triton-one/yellowstone-grpc:** The official client library for interacting with the Yellowstone Geyser gRPC interface.
+- **@solana/web3.js:** Used for interacting with Solana-specific data structures and converting public keys.
 
-## ✨ Supported Instructions
+## How It Works
 
-The monitor parses and outputs **all major Pump.fun instruction types**, each with its own decoded fields and account mappings:
+The application establishes a gRPC connection to a Solana node equipped with the Yellowstone Geyser plugin. It then subscribes to a stream of transaction updates, with filters applied to only receive transactions relevant to the Pump.fun program and a specified list of mint authorities.
 
-### 1. Create (Token Mint)
-- **Discriminator:** `[24, 30, 200, 40, 5, 28, 7, 119]`
-- **Arguments:**
-  - `name` (string): Token name
-  - `symbol` (string): Token symbol
-  - `uri` (string): Metadata URI (often IPFS)
-  - `creator` (pubkey): Creator public key (32 bytes)
-- **Accounts:**
-  - `mint` (index 0): New mint address
-  - `mint_authority` (index 1)
-  - `bonding_curve` (index 2)
-  - `associated_bonding_curve` (index 3)
-  - `user` (index 7): Transaction signer/creator
+When a new transaction is received, the application performs the following steps:
 
-### 2. Buy
-- **Discriminator:** `[102, 6, 61, 18, 1, 218, 235, 234]`
-- **Arguments:**
-  - `amount` (u64): Number of tokens to buy
-  - `max_sol_cost` (u64): Max SOL to spend
-- **Accounts:**
-  - `global` (index 0)
-  - `fee_recipient` (index 1)
-  - `mint` (index 2)
-  - `bonding_curve` (index 3)
-  - `associated_bonding_curve` (index 4)
+1.  **Filters by Instruction:** It inspects the transaction's instructions to identify whether it's a buy or sell event by matching instruction discriminators.
+2.  **Decodes Data:** The raw instruction data is decoded to extract arguments like the amount of tokens being bought or sold and the corresponding SOL cost or output.
+3.  **Formats and Prints:** The decoded information is then formatted into a compact, human-readable output and printed to the console, providing a real-time feed of activity.
 
-### 3. Sell
-- **Discriminator:** `[51, 230, 133, 164, 1, 127, 131, 173]`
-- **Arguments:**
-  - `amount` (u64): Number of tokens to sell
-  - `min_sol_output` (u64): Minimum SOL to receive
-- **Accounts:**
-  - `global` (index 0)
-  - `fee_recipient` (index 1)
-  - `mint` (index 2)
-  - `bonding_curve` (index 3)
-  - `associated_bonding_curve` (index 4)
+## Future Development: Migrating to Rust
 
-### 4. Collect Creator Fee
-- **Discriminator:** `[20, 22, 86, 123, 198, 28, 219, 132]`
-- **Arguments:** (none)
-- **Accounts:**
-  - `creator` (index 0)
-  - `creator_vault` (index 1)
-  - `system_program` (index 2)
-  - `event_authority` (index 3)
-  - `program` (index 4)
+To achieve even greater performance and reliability, this project will soon be migrated to Rust. The move to Rust will offer several advantages:
 
----
+-   **Enhanced Speed:** Rust's performance characteristics are ideal for high-throughput data processing, which is critical when dealing with real-time blockchain data.
+-   **Memory Safety:** Rust's ownership model guarantees memory safety without the need for a garbage collector, reducing the likelihood of bugs and security vulnerabilities.
+-   **Concurrency:** Rust provides robust support for concurrent programming, allowing for more efficient handling of multiple data streams.
 
-## 🏗 Architecture & How It Works
+This transition will ensure the project remains a powerful and reliable tool for monitoring the fast-paced environment of the Pump.fun platform.
 
-1. **Connection**: Establishes a Yellowstone gRPC streaming connection to Solana.
-2. **Subscription**: Filters for Pump.fun program and all supported instruction discriminators.
-3. **Instruction Parsing**: Decodes the instruction type and all associated arguments using Borsh and account index mapping.
-4. **Data Extraction**: Resolves program accounts using account indices for each instruction type.
-5. **Output Formatting**: Emits a structured JSON object for every detected instruction.
+## Project Setup
 
----
+To get the project up and running, follow these steps:
 
-## 🧑‍💻 Example Output
+1.  **Clone the Repository:**
 
-```json
-{
-  "signature": "abc123...",
-  "slot": "351135729",
-  "instructionType": "create",
-  "mint": "E41HLfWbcrWNWf8idDk4Ac1Jghcf2vKxAnekn2Appump",
-  "bonding_curve": "DxHGkWPSDyToX61WawYHqscWYaaur9Ywtdhx7Gt1q7rb",
-  "associated_bonding_curve": "3QY5FNLFNZUS47KpS8ZctE7X82MS6Bd7HMh6mDg9un2V",
-  "user": "A2Xe6cErqHEeW1vZTRxcsFzRhGFoWFnuHqCxoU2H3AhP",
-  "name": "Bitcoin Hyper",
-  "symbol": "Hyper",
-  "uri": "https://ipfs.io/ipfs/QmWxqrfKkAebJmUbvd6kRV8HKfyBCyPGijmR5i3Kx7jC4y",
-  "creator": "A2Xe6cErqHEeW1vZTRxcsFzRhGFoWFnuHqCxoU2H3AhP"
-}
-```
-- The `instructionType` field will be one of: `"create"`, `"buy"`, `"sell"`, `"collect_creator_fee"`
-- For buy/sell, the JSON will include all parsed arguments and relevant accounts for that instruction.
+    ```bash
+    git clone <repository-url>
+    cd pump-fun-data-parsing-yellostone-gRPC
+    ```
 
----
+2.  **Install Dependencies:**
 
-## ⚙️ Configuration
+    ```bash
+    npm install
+    ```
 
-- **ENV Variables:**
-  - `ENDPOINT`: Yellowstone gRPC endpoint URL
-  - `TOKEN`: Auth token (if needed)
-- **Program ID:** `6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P` (Pump.fun)
-- **Commitment Level:** `FINALIZED`
+3.  **Set Up Environment Variables:**
 
----
+    Create a `.env` file in the root of the project by copying the example file:
 
-## 🧬 Technical Details
+    ```bash
+    cp .env.example .env
+    ```
 
-- **Dependencies:**
-  - `@triton-one/yellowstone-grpc`: Solana gRPC client
-  - `@solana/web3.js`: Solana SDK
-  - `bs58`: Base58 encoding
-  - `dotenv`: Env management
-- **Instruction decoding** is performed with custom logic for Borsh structures and account index mapping.
+    Open the `.env` file and add the following environment variables:
 
----
+    ```
+    ENDPOINT="your-geyser-endpoint-url"
+    PUMP_FUN_MINT_AUTHORITY_DOG="your-dog-mint-authority-pubkey"
+    PUMP_FUN_MINT_AUTHORITY_BTK="your-btk-mint-authority-pubkey"
+    PUMP_FUN_MINT_AUTHORITY_LOST="your-lost-mint-authority-pubkey"
+    PUMP_FUN_MINT_AUTHORITY_GROWTH="your-growth-mint-authority-pubkey"
+    PUMP_FUN_MINT_AUTHORITY_STANDARD="your-standard-mint-authority-pubkey"
+    ```
 
-## 🛡 Error Handling & Robustness
+    Replace the placeholder values with your actual Geyser endpoint and the public keys of the mint authorities you want to monitor.
 
-- Handles connection drops and stream errors with auto-reconnect.
-- Validates and sanitizes parsed transaction data.
-- Optimized to minimize memory usage and network overhead.
+4.  **Build the Project:**
 
----
+    ```bash
+    npm run build
+    ```
 
-## 📝 Contributing
+5.  **Run the Application:**
 
-1. Fork the repo
-2. Create a branch: `git checkout -b feature/my-feature`
-3. Commit: `git commit -m 'Add my feature'`
-4. Push: `git push origin feature/my-feature`
-5. Open a PR!
+    ```bash
+    npm start
+    ```
 
----
-
-## 📄 License
-
-[ISC License](LICENSE)
-
----
-
-## ⚠️ Disclaimer
-
-This tool is for educational and monitoring purposes only. Ensure compliance with relevant regulations when monitoring blockchain data.
-
----
-
-## 🤝 Support
-
-For issues and questions, please open an issue on GitHub or contact the maintainers.
+Once running, the application will start printing real-time buy and sell transactions to the console for the configured mint authorities.

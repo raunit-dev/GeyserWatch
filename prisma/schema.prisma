@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model BuyTransaction {
+  id              String   @id @default(cuid())
+  signature       String   @unique
+  mint            String
+  amount          String   // Store as string to handle BigInt
+  maxSolCost      String?  // Store as string to handle BigInt
+  slot            String
+  mintAuthority   String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("buy_transactions")
+}
+
+model SellTransaction {
+  id              String   @id @default(cuid())
+  signature       String   @unique
+  mint            String
+  amount          String   // Store as string to handle BigInt
+  minSolOutput    String?  // Store as string to handle BigInt
+  slot            String
+  mintAuthority   String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("sell_transactions")
+}
