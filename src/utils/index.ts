@@ -5,7 +5,7 @@ import { Message, FormattedTransactionData, CompiledInstruction } from "../types
 import {
   ACCOUNTS_TO_INCLUDE,
   FILTER_CONFIG,
-  GATEWAYS,
+  // GATEWAYS,
   INSTRUCTION_ARGS,
   PUMP_FUN_BUY_IX_DISCRIMINATOR,
   // PUMP_FUN_CREATE_IX_DISCRIMINATOR,
@@ -56,7 +56,7 @@ export async function decodeCreateInstructionArgs(
     args.uri = uriBytes.toString("utf-8");
     offset += uriLength;
 
-    args.image = await getImageUri(args.uri);
+    // args.image = await getImageUri(args.uri);
 
     const creatorBytes = buffer.subarray(offset, offset + 32);
     args.creator = new PublicKey(creatorBytes).toBase58();
@@ -108,40 +108,40 @@ export function decodeSellInstructionArgs(
   }
 }
 
-export async function getImageUri(metadataUri: string): Promise<string> {
-  if (!metadataUri || metadataUri === "invalid uri") {
-    return "invalid uri";
-  }
-  const cid = metadataUri.split("/").pop();
-  for (const gateway of GATEWAYS) {
-    const gatewayUrl = `${gateway}${cid}`;
-    try {
-      const response = await axios.get(gatewayUrl, {
-        headers: { Accept: "application/json" },
-        timeout: 5000,
-      });
-      if (response?.data?.image) {
-        console.log(`Success from ${gateway}`);
-        return resolveIpfsImageUri(response.data.image);
-      }
-    } catch (err) {
-      console.warn(
-        `Failed to fetch from ${gateway}:`,
-        err.response?.status || err.message
-      );
-      continue;
-    }
-  }
-  return "invalid uri";
-}
+// export async function getImageUri(metadataUri: string): Promise<string> {
+//   if (!metadataUri || metadataUri === "invalid uri") {
+//     return "invalid uri";
+//   }
+//   const cid = metadataUri.split("/").pop();
+//   for (const gateway of GATEWAYS) {
+//     const gatewayUrl = `${gateway}${cid}`;
+//     try {
+//       const response = await axios.get(gatewayUrl, {
+//         headers: { Accept: "application/json" },
+//         timeout: 5000,
+//       });
+//       if (response?.data?.image) {
+//         console.log(`Success from ${gateway}`);
+//         return resolveIpfsImageUri(response.data.image);
+//       }
+//     } catch (err) {
+//       console.warn(
+//         `Failed to fetch from ${gateway}:`,
+//         err.response?.status || err.message
+//       );
+//       continue;
+//     }
+//   }
+//   return "invalid uri";
+// }
 
-export function resolveIpfsImageUri(ipfsUri: string): string {
-  if (ipfsUri.startsWith("ipfs://")) {
-    const cid = ipfsUri.replace("ipfs://", "");
-    return `https://cloudflare-ipfs.com/ipfs/${cid}`;
-  }
-  return ipfsUri;
-}
+// export function resolveIpfsImageUri(ipfsUri: string): string {
+//   if (ipfsUri.startsWith("ipfs://")) {
+//     const cid = ipfsUri.replace("ipfs://", "");
+//     return `https://cloudflare-ipfs.com/ipfs/${cid}`;
+//   }
+//   return ipfsUri;
+// }
 
 export async function formatData(
   message: Message,

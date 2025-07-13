@@ -29,6 +29,8 @@ export const MINT_AUTHORITIES = [
 ];
 
 export const FILTER_CONFIG = {
+
+  
   programIds: [PUMP_PROGRAM_ID],
   requiredAccounts: [
     PUMP_PROGRAM_ID,
@@ -87,11 +89,11 @@ export const INSTRUCTION_ARGS: Record<string, { name: string; type: string }[]> 
     // [PUMP_FUN_COLLECT_CREATOR_FEE_IX_DISCRIMINATOR.toString("hex")]: [],
   };
 
-export const GATEWAYS = [
-  "https://dweb.link/ipfs/",
-  "https://cloudflare-ipfs.com/ipfs/",
-  "https://ipfs.io/ipfs/",
-];
+// export const GATEWAYS = [
+//   "https://dweb.link/ipfs/",
+//   "https://cloudflare-ipfs.com/ipfs/",
+//   "https://ipfs.io/ipfs/",
+// ];
 
 
 
