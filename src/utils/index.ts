@@ -8,23 +8,24 @@ import {
   GATEWAYS,
   INSTRUCTION_ARGS,
   PUMP_FUN_BUY_IX_DISCRIMINATOR,
-  PUMP_FUN_CREATE_IX_DISCRIMINATOR,
+  // PUMP_FUN_CREATE_IX_DISCRIMINATOR,
   PUMP_FUN_SELL_IX_DISCRIMINATOR,
-  PUMP_FUN_COLLECT_CREATOR_FEE_IX_DISCRIMINATOR,
+  // PUMP_FUN_COLLECT_CREATOR_FEE_IX_DISCRIMINATOR,
 } from "../config";
 
 export async function decodeInstructionArgs(
   instructionData: Uint8Array
 ): Promise<Record<string, any>> {
   const discriminator = Buffer.from(instructionData.slice(0, 8));
-  if (discriminator.equals(PUMP_FUN_CREATE_IX_DISCRIMINATOR)) {
-    return decodeCreateInstructionArgs(instructionData);
-  } else if (discriminator.equals(PUMP_FUN_BUY_IX_DISCRIMINATOR)) {
+  // if (discriminator.equals(PUMP_FUN_CREATE_IX_DISCRIMINATOR)) {
+  //   return decodeCreateInstructionArgs(instructionData);
+  // } else 
+  if (discriminator.equals(PUMP_FUN_BUY_IX_DISCRIMINATOR)) {
     return decodeBuyInstructionArgs(instructionData);
   } else if (discriminator.equals(PUMP_FUN_SELL_IX_DISCRIMINATOR)) {
     return decodeSellInstructionArgs(instructionData);
-  } else if (discriminator.equals(PUMP_FUN_COLLECT_CREATOR_FEE_IX_DISCRIMINATOR)) {
-    return {};
+  // } else if (discriminator.equals(PUMP_FUN_COLLECT_CREATOR_FEE_IX_DISCRIMINATOR)) {
+  //   return {};
   }
   return {};
 }
@@ -157,16 +158,15 @@ export async function formatData(
   const discriminator = Buffer.from(matchingInstruction.data.slice(0, 8));
   const discriminatorHex = discriminator.toString("hex");
 
-  let instructionType: "create" | "buy" | "sell" | "collect_creator_fee";
-  if (discriminator.equals(PUMP_FUN_CREATE_IX_DISCRIMINATOR)) {
-    instructionType = "create";
-  } else if (discriminator.equals(PUMP_FUN_BUY_IX_DISCRIMINATOR)) {
+  let instructionType: | "buy" | "sell" ;
+  // if (discriminator.equals(PUMP_FUN_CREATE_IX_DISCRIMINATOR)) {
+  //   instructionType = "create";
+  // } else 
+  if (discriminator.equals(PUMP_FUN_BUY_IX_DISCRIMINATOR)) {
     instructionType = "buy";
   } else if (discriminator.equals(PUMP_FUN_SELL_IX_DISCRIMINATOR)) {
     instructionType = "sell";
-  } else {
-    instructionType = "collect_creator_fee";
-  }
+  }; 
 
   const accountKeys = message.accountKeys;
 const accountList = ACCOUNTS_TO_INCLUDE[discriminatorHex];
@@ -210,7 +210,7 @@ export function convertSignature(signature: Uint8Array): { base58: string } {
   return { base58: bs58.encode(Buffer.from(signature)) };
 }
 
-export function matchesInstructionDiscriminator(
+export function matchesInstructionDiscriminator( //data filteration fuction is done on client side which is a pretty bad way to do tbh
   ix: CompiledInstruction
 ): boolean {
   const matches =

@@ -16,12 +16,13 @@ export async function main(): Promise<void> {
   const ENDPOINT = process.env.ENDPOINT;
   const TOKEN = process.env.TOKEN;
 
-  if (!ENDPOINT || !TOKEN) {
-    console.log(ENDPOINT, TOKEN);
+  // if (!ENDPOINT || !TOKEN) {
+  if (!ENDPOINT) {
+    console.log(ENDPOINT);
     console.log("Please provide Endpoint URL and TOken in env file");
     return;
   }
-  const client = new Client(ENDPOINT, undefined, undefined);
+  const client = new Client(ENDPOINT,undefined, {});
   const stream = await client.subscribe();
   const request = createSubscribeRequest();
   try {
@@ -40,9 +41,9 @@ function createSubscribeRequest(): SubscribeRequest {
     slots: {},
     transactions: {
       pumpFun: {
-        accountInclude: FILTER_CONFIG.programIds,
+        accountInclude: [],
         accountExclude: [],
-        accountRequired: [],
+        accountRequired: FILTER_CONFIG.requiredAccounts,
       },
     },
     transactionsStatus: {},
