@@ -2,10 +2,10 @@
   "name": "pump-fun-monitor",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "npx ts-node index.ts",
+    "dev": "npx ts-node src/index.ts",
     "build": "tsc",
     "watch": "tsc --watch",
     "clean": "rm -rf dist",

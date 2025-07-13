@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
 dotenv.config();
-import { main } from "./src/client";
+import { main } from "./client";
 
 main();
