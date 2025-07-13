@@ -4,7 +4,7 @@ import {
   SubscribeUpdate,
 } from "@triton-one/yellowstone-grpc";
 import { PUMP_PROGRAM_ID, COMMITMENT } from "../config";
-import { handleData } from "./handlers";
+import { handleData } from "./dataHandler";
 
 export function createSubscribeRequestForMint(mintAuthority: string): SubscribeRequest {
   return {

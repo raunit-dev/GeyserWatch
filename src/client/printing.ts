@@ -25,7 +25,7 @@ export function printCleanTransaction(data: any, mintAuthority: string): void {
 
 export function printCompactTransaction(data: any, mintAuthority: string): void {
   const type = data.instructionType.toUpperCase();
-  const mint = data.mint.substring(0, 8) + '...'; // Truncate mint for readability
+  const mint = data.mint;
   const amount = data.amount ? (BigInt(data.amount) / BigInt(1000000)).toString() : 'N/A';
   
   let extraInfo = '';

@@ -10,10 +10,10 @@ datasource db {
 
 model BuyTransaction {
   id              String   @id @default(cuid())
-  signature       String   @unique
+  signature       String?   @unique
   mint            String
-  amount          String   // Store as string to handle BigInt
-  maxSolCost      String?  // Store as string to handle BigInt
+  amount          String   
+  maxSolCost      String?  
   slot            String
   mintAuthority   String
   createdAt       DateTime @default(now())
@@ -24,10 +24,10 @@ model BuyTransaction {
 
 model SellTransaction {
   id              String   @id @default(cuid())
-  signature       String   @unique
+  signature       String?   @unique
   mint            String
-  amount          String   // Store as string to handle BigInt
-  minSolOutput    String?  // Store as string to handle BigInt
+  amount          String  
+  minSolOutput    String?  
   slot            String
   mintAuthority   String
   createdAt       DateTime @default(now())
